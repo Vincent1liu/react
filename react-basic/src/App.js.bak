@@ -1,0 +1,117 @@
+import {useState,useRef} from 'react';
+
+const isLogin = true;
+
+//定义组件
+function Button() {
+  // logic
+  return <button>click Button</button>
+}
+
+// P25 父传子接
+// 子组件 props参数
+function Son(props){
+
+  return <div>This is son, {props.name} ,jsx: {props.child}</div> // props.name 是Father组件定义的name
+}
+
+
+// 子传父 ： 在子组件中调用父组件的函数并传递参数
+
+function Son2(onGetSonMsg){
+  const sonMsg = "This is msg "
+  return <div>
+    This is Son 2
+    <Button onClick = {()=>onGetSonMsg(sonMsg)}>SendMsg</Button>
+  </div>
+}
+function App() {
+  // const handleClick = () => {console.log('button was clicked')};
+
+  // 获取事件参数 e
+  const handleClick = (e) => {console.log('e button was clicked',e)};
+
+  // 获取自定义参数
+  const handleClick1 = (name) => {console.log('e button was clicked 2',name)};
+
+  // 获取e & 自定义参数
+  const handleClick2 = (name,e) => {console.log('e button was clicked 2',name,e)};
+
+  
+  // useState 实现一个计数器 & 改名，useState 是只读，不能直接修改，需要新对象来替换老对象
+  // 1.调用useState 添加状态变量
+  const [count,setCount] = useState(0);
+  // 2. 点击事件回调
+  const handleClick3 = () => {setCount(count +1)};
+
+  const [form,setForm] = useState({name: 'Jack'});
+  const handleClick4 = () => {
+    // wrong :
+    // form.name = "Vincent";
+    setForm({
+    ...form,
+    name: 'Vincent',
+  })};
+
+  // 受控表单
+  const [value,setValue] = useState('');
+
+  const inputRef = useRef();
+  const showDom = () => {console.log(inputRef.current.value)};
+
+  const name = 'This is father';
+
+  const getMsg = (msg) => { 
+    console.log(msg)
+  }
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
+  return (
+    <div className="App">
+      This is a React App
+
+      { /*条件渲染 */ }
+      {isLogin && <span> This is span </span>}
+      {isLogin ?  <span> isLogin is true </span> :  <span> This is loading </span>}
+
+      { /* 事件绑定 */ }
+      <button onClick = {handleClick}> click me </button>
+      <button onClick = {()=> handleClick1("Vincent")}> click me 1 </button>
+      <button onClick = {(e)=> handleClick2("Vincent",e)}> click me 2 </button>
+
+      { /* 使用组件 */ }
+      <Button/>
+      <Button></Button>
+
+      { /* useState */ }
+      {/* <button>{count}</button> */}
+      <button onClick = {handleClick3}>{count}</button>
+      <button onClick = {handleClick4}>setForm{form.name}</button>
+
+
+      <input 
+      value = {value} 
+      onChange={(e)=>setValue(e.target.value)}
+      type='text'
+      /> 
+
+      
+      <input type='text' ref={inputRef} />
+      <button onClick = {showDom}>Show Dom</button>
+
+      {/* P25 父传子接 子组件 属性绑定，父组件 props 形参*/}
+      <Son 
+      name = {name} 
+      age = {18} 
+      isTrue = {true} 
+      list = {['1','2']}
+      obj = {{name:'Son'}}
+      callback = {()=>{console.log('callback function')}}
+      child = {<span>child span</span>}
+      />
+
+      <Son2 onGetSonMsg = {getMsg}/>
+    </div>
+  );
+}
+
+export default App;
